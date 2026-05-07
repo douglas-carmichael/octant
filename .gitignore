@@ -1,0 +1,37 @@
+# macOS
+.DS_Store
+
+# Xcode user-specific
+xcuserdata/
+*.xcuserstate
+*.moved-aside
+
+# Build output
+build/
+DerivedData/
+*.dSYM
+*.dSYM.zip
+*.ipa
+*.hmap
+
+# Legacy Xcode caches
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+Package.pins
+Package.resolved
+*.xcodeproj/.build/
+
+# Dependency managers (just in case)
+Pods/
+Carthage/Build/
