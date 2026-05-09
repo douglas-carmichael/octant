@@ -38,6 +38,7 @@ extension FocusedValues {
 struct GameCommands: Commands {
     @FocusedValue(\.gamePhase) private var gamePhase: GamePhase?
     @FocusedValue(\.appMode) private var appMode: AppMode?
+    @AppStorage(UserDefaults.audioMutedKey) private var audioMuted: Bool = false
 
     var body: some Commands {
         CommandGroup(after: .newItem) {
@@ -52,6 +53,12 @@ struct GameCommands: Commands {
             }
             .keyboardShortcut("m", modifiers: [.command, .shift])
             .disabled(appMode == .mainMenu)
+        }
+        CommandMenu("Audio") {
+            Button(audioMuted ? "Unmute" : "Mute") {
+                audioMuted.toggle()
+            }
+            .keyboardShortcut("m", modifiers: [.command, .option])
         }
     }
 }

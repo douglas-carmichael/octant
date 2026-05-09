@@ -69,6 +69,7 @@ final class GameModel: ObservableObject {
         guard !isResolving, index < bits.count else { return }
         clicks += 1
         bits[index].toggle()
+        SoundPlayer.shared.play(.click)
         checkWin()
     }
 
@@ -87,6 +88,7 @@ final class GameModel: ObservableObject {
         ))
         winFlash &+= 1
         isResolving = true
+        SoundPlayer.shared.play(.win)
 
         Task { [weak self] in
             try? await Task.sleep(nanoseconds: 650_000_000)
@@ -95,6 +97,7 @@ final class GameModel: ObservableObject {
                 self.advanceRound()
             } else {
                 self.phase = .results
+                SoundPlayer.shared.play(.finish)
             }
             self.isResolving = false
         }

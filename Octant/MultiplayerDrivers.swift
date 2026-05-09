@@ -159,6 +159,9 @@ final class HostDriver: NetSessionDriver {
                 guard let self, let session = self.session else { timer.invalidate(); return }
                 session.countdownSeconds -= 1
                 self.broadcast(.startCountdown(seconds: session.countdownSeconds))
+                if session.countdownSeconds > 0 {
+                    SoundPlayer.shared.play(.tick)
+                }
                 if session.countdownSeconds <= 0 {
                     timer.invalidate()
                     self.beginNextRound()
@@ -192,6 +195,7 @@ final class HostDriver: NetSessionDriver {
                          target: target,
                          bitsCount: session.config.bitsCount,
                          deadlineEpoch: deadline.timeIntervalSince1970))
+        SoundPlayer.shared.play(.start)
         startRoundTimer()
     }
 
@@ -229,9 +233,13 @@ final class HostDriver: NetSessionDriver {
     private func timeoutCurrentRound() {
         guard let session else { return }
         let limit = Double(session.config.secondsPerRound)
+        let localUnsolved = !pendingScores.contains { $0.playerID == session.localPlayerID }
         for player in session.players where !pendingScores.contains(where: { $0.playerID == player.id }) {
             pendingScores.append(PlayerScore(playerID: player.id, playerName: player.name,
                                              solved: false, time: limit, clicks: 0))
+        }
+        if localUnsolved {
+            SoundPlayer.shared.play(.error)
         }
         commitRound()
     }
@@ -285,6 +293,7 @@ final class HostDriver: NetSessionDriver {
         session.finalStandings = standingsList
         session.phase = .finalResults
         broadcast(.gameOver(finalStandings: standingsList))
+        SoundPlayer.shared.play(.finish)
     }
 
     func kick(_ player: NetPlayer) {
@@ -414,6 +423,7 @@ final class ClientDriver: NetSessionDriver {
             session.countdownSeconds = seconds
             if seconds > 0 {
                 session.phase = .countdown
+                SoundPlayer.shared.play(.tick)
             }
 
         case .round(let round, let total, let target, let bitsCount, let deadlineEpoch):
@@ -429,6 +439,7 @@ final class ClientDriver: NetSessionDriver {
             session.deadline = Date(timeIntervalSince1970: deadlineEpoch)
             session.roundStartTime = Date()
             session.phase = .playing
+            SoundPlayer.shared.play(.start)
 
         case .roundResults(let round, let total, let target, let bitsCount, let scores):
             let result = NetRoundResult(round: round, total: total, target: target, bitsCount: bitsCount, scores: scores)
@@ -443,6 +454,7 @@ final class ClientDriver: NetSessionDriver {
         case .gameOver(let standings):
             session.finalStandings = standings
             session.phase = .finalResults
+            SoundPlayer.shared.play(.finish)
 
         case .kick(let pid):
             if pid == session.localPlayerID {
@@ -457,6 +469,7 @@ final class ClientDriver: NetSessionDriver {
 
         case .error(let m):
             session.errorMessage = m
+            SoundPlayer.shared.play(.error)
 
         default:
             break

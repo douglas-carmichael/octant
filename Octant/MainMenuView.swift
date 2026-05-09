@@ -47,11 +47,17 @@ final class AppCoordinator: ObservableObject {
 
 struct MainMenuView: View {
     @ObservedObject var coordinator: AppCoordinator
+    @AppStorage(UserDefaults.audioMutedKey) private var audioMuted: Bool = false
 
     var body: some View {
         VStack(spacing: 28) {
+            HStack {
+                Spacer()
+                MuteButton(muted: $audioMuted)
+            }
+            .padding(.top, 6)
+
             Wordmark()
-                .padding(.top, 36)
 
             Spacer(minLength: 0)
 
@@ -133,6 +139,27 @@ private struct Wordmark: View {
                     .frame(width: 24, height: 2)
             }
         }
+    }
+}
+
+private struct MuteButton: View {
+    @Binding var muted: Bool
+
+    var body: some View {
+        Button {
+            muted.toggle()
+            if !muted { SoundPlayer.shared.play(.nav) }
+        } label: {
+            Image(systemName: muted ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(muted ? .white.opacity(0.5) : Color.accent)
+                .frame(width: 36, height: 36)
+                .background(Circle().fill(Color.surface2))
+                .overlay(Circle().strokeBorder(Color.white.opacity(0.1), lineWidth: 1))
+                .tvFocusRing(cornerRadius: 18)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(muted ? "Unmute audio" : "Mute audio")
     }
 }
 

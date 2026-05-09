@@ -43,6 +43,8 @@
 		1B0000000000000000003001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000001008 /* Assets.xcassets */; };
 		1B0000000000000000003002 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000001009 /* Preview Assets.xcassets */; };
 		1B000000000000000000300A /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = A30E99092F9E00EF00B417CE /* Localizable.xcstrings */; };
+		1A0000000000000000002020 /* Sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000001020 /* Sound.swift */; };
+		1B0000000000000000002020 /* Sound.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A0000000000000000001020 /* Sound.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -67,6 +69,7 @@
 		1A0000000000000000001018 /* Octant.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Octant.entitlements; sourceTree = "<group>"; };
 		A30E99092F9E00EF00B417CE /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		1B000000000000000000000F /* Octant-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Octant-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A0000000000000000001020 /* Sound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sound.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +116,7 @@
 				1A0000000000000000001016 /* MultiplayerGameView.swift */,
 				1A0000000000000000001017 /* MultiplayerResultsView.swift */,
 				1A0000000000000000001007 /* Theme.swift */,
+				1A0000000000000000001020 /* Sound.swift */,
 				A30E99092F9E00EF00B417CE /* Localizable.xcstrings */,
 				1A0000000000000000001008 /* Assets.xcassets */,
 				1A0000000000000000001018 /* Octant.entitlements */,
@@ -256,6 +260,7 @@
 				1A0000000000000000002016 /* MultiplayerGameView.swift in Sources */,
 				1A0000000000000000002017 /* MultiplayerResultsView.swift in Sources */,
 				1A0000000000000000002007 /* Theme.swift in Sources */,
+				1A0000000000000000002020 /* Sound.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,6 +283,7 @@
 				1B0000000000000000002016 /* MultiplayerGameView.swift in Sources */,
 				1B0000000000000000002017 /* MultiplayerResultsView.swift in Sources */,
 				1B0000000000000000002007 /* Theme.swift in Sources */,
+				1B0000000000000000002020 /* Sound.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

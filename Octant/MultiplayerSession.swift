@@ -135,12 +135,14 @@ final class MultiplayerSession: ObservableObject {
               index < bits.count else { return }
         clicks += 1
         bits[index].toggle()
+        SoundPlayer.shared.play(.click)
         if currentValue == currentTarget {
             let elapsed = Date().timeIntervalSince(roundStartTime)
             lastSolveTime = elapsed
             hasFinishedRound = true
             isResolving = true
             winFlash &+= 1
+            SoundPlayer.shared.play(.win)
             driver?.reportFinished(round: currentRound, time: elapsed, clicks: clicks)
             Task { [weak self] in
                 try? await Task.sleep(nanoseconds: 450_000_000)
