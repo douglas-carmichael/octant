@@ -1,5 +1,7 @@
 import SwiftUI
+#if os(macOS)
 import AppKit
+#endif
 
 struct ContentView: View {
     @StateObject private var coordinator = AppCoordinator()
@@ -23,12 +25,19 @@ struct ContentView: View {
                         .transition(.opacity.combined(with: .scale(scale: 0.97)))
                 }
             }
+            #if os(tvOS)
+            .padding(.horizontal, 90)
+            .padding(.vertical, 40)
+            #else
             .padding(.horizontal, 28)
             .padding(.vertical, 16)
+            #endif
         }
+        #if os(macOS)
         .focusedValue(\.appMode, coordinator.mode)
         .focusedValue(\.gamePhase, coordinator.gameModel.phase)
         .focusedValue(\.netSessionPhase, coordinator.session.phase)
+        #endif
         .animation(.spring(response: 0.45, dampingFraction: 0.85), value: coordinator.mode)
         .animation(.spring(response: 0.45, dampingFraction: 0.85), value: coordinator.gameModel.phase)
         .animation(.spring(response: 0.45, dampingFraction: 0.85), value: coordinator.session.phase)
@@ -80,6 +89,7 @@ struct ContentView: View {
         } message: {
             Text(pendingErrorMessage ?? "")
         }
+        #if os(macOS)
         .onAppear {
             DispatchQueue.main.async {
                 guard let window = NSApplication.shared.windows.first,
@@ -93,6 +103,7 @@ struct ContentView: View {
                 }
             }
         }
+        #endif
     }
 
     @ViewBuilder

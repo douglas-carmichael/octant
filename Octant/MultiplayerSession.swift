@@ -2,6 +2,9 @@ import Foundation
 import SwiftUI
 import Combine
 import Network
+#if canImport(UIKit)
+import UIKit
+#endif
 
 @MainActor
 final class MultiplayerSession: ObservableObject {
@@ -149,7 +152,13 @@ final class MultiplayerSession: ObservableObject {
     // MARK: - Helpers
 
     static func defaultPlayerName() -> String {
+        #if os(macOS)
         let host = Host.current().localizedName ?? NSUserName()
+        #elseif canImport(UIKit)
+        let host = UIDevice.current.name
+        #else
+        let host = ProcessInfo.processInfo.hostName
+        #endif
         let trimmed = host
             .replacingOccurrences(
                 of: "[\u{2018}\u{2019}\u{02BC}']s\\s.*$",
@@ -157,12 +166,13 @@ final class MultiplayerSession: ObservableObject {
                 options: .regularExpression
             )
             .replacingOccurrences(
-                of: "\\s+Mac.*$",
+                of: "\\s+(Mac|Apple TV|iPhone|iPad).*$",
                 with: "",
                 options: .regularExpression
             )
             .trimmingCharacters(in: .whitespaces)
-        return String(trimmed.prefix(20))
+        let cleaned = trimmed.isEmpty ? "Player" : trimmed
+        return String(cleaned.prefix(20))
     }
 }
 

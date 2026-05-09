@@ -175,6 +175,7 @@ private struct MenuButton: View {
                     .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
             )
             .shadow(color: .black.opacity(0.3), radius: 10, y: 4)
+            .tvFocusRing(cornerRadius: 14)
         }
         .buttonStyle(.plain)
     }

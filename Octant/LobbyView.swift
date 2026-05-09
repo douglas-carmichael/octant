@@ -113,6 +113,7 @@ struct BrowseView: View {
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                                     .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
                             )
+                            .tvFocusRing(cornerRadius: 12)
                         }
                         .buttonStyle(.plain)
                     }
@@ -294,6 +295,7 @@ private struct StepButton: View {
                 .frame(width: 32, height: 32)
                 .background(Circle().fill(Color.surface2))
                 .overlay(Circle().strokeBorder(Color.white.opacity(0.1), lineWidth: 1))
+                .tvFocusRing(cornerRadius: 16)
         }
         .buttonStyle(.plain)
     }
@@ -385,6 +387,7 @@ struct BackButton: View {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
             )
+            .tvFocusRing(cornerRadius: 8)
         }
         .buttonStyle(.plain)
         .frame(width: 80, alignment: .leading)

@@ -1,9 +1,13 @@
 import SwiftUI
+#if os(macOS)
 import AppKit
+#endif
 
+#if os(macOS)
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
 }
+#endif
 
 extension Notification.Name {
     static let newGameRequested = Notification.Name("NewGameRequested")
@@ -12,6 +16,7 @@ extension Notification.Name {
     static let networkDisconnected = Notification.Name("NetworkDisconnected")
 }
 
+#if os(macOS)
 struct GamePhaseFocusedKey: FocusedValueKey { typealias Value = GamePhase }
 struct AppModeFocusedKey: FocusedValueKey { typealias Value = AppMode }
 struct NetSessionPhaseFocusedKey: FocusedValueKey { typealias Value = NetSessionPhase }
@@ -50,9 +55,11 @@ struct GameCommands: Commands {
         }
     }
 }
+#endif
 
 @main
 struct OctantApp: App {
+    #if os(macOS)
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     init() {
@@ -62,8 +69,10 @@ struct OctantApp: App {
         let visible = NSScreen.main?.visibleFrame.size ?? CGSize(width: 1440, height: 900)
         return CGSize(width: visible.width - 40, height: visible.height - 20)
     }
+    #endif
 
     var body: some Scene {
+        #if os(macOS)
         WindowGroup {
             ContentView()
                 .preferredColorScheme(.dark)
@@ -83,5 +92,11 @@ struct OctantApp: App {
             }
             GameCommands()
         }
+        #else
+        WindowGroup {
+            ContentView()
+                .preferredColorScheme(.dark)
+        }
+        #endif
     }
 }

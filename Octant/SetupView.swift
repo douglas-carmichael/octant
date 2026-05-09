@@ -170,6 +170,7 @@ private struct StepButton: View {
                 .overlay(
                     Circle().strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
                 )
+                .tvFocusRing(cornerRadius: 18)
         }
         .buttonStyle(.plain)
     }

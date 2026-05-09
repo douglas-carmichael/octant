@@ -49,7 +49,12 @@ final class HostDriver: NetSessionDriver {
 
     private static func makeServiceName(for hostName: String) -> String {
         let trimmed = hostName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let base = trimmed.isEmpty ? NSUserName() : trimmed
+        #if os(macOS)
+        let fallback = NSUserName()
+        #else
+        let fallback = MultiplayerSession.defaultPlayerName()
+        #endif
+        let base = trimmed.isEmpty ? fallback : trimmed
         let format = NSLocalizedString("host.service.name", value: "%@'s Octant", comment: "Bonjour service name")
         return String(format: format, base)
     }

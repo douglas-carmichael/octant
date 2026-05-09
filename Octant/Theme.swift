@@ -76,6 +76,35 @@ struct PrimaryButtonStyle: ButtonStyle {
     }
 }
 
+#if os(tvOS)
+struct TVFocusRing: ViewModifier {
+    var cornerRadius: CGFloat = 12
+    @Environment(\.isFocused) private var isFocused
+
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(Color.accentBright, lineWidth: isFocused ? 4 : 0)
+                    .shadow(color: Color.accent.opacity(isFocused ? 0.6 : 0), radius: 16)
+                    .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isFocused)
+            )
+            .scaleEffect(isFocused ? 1.08 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isFocused)
+    }
+}
+
+extension View {
+    func tvFocusRing(cornerRadius: CGFloat = 12) -> some View {
+        modifier(TVFocusRing(cornerRadius: cornerRadius))
+    }
+}
+#else
+extension View {
+    func tvFocusRing(cornerRadius: CGFloat = 12) -> some View { self }
+}
+#endif
+
 struct SecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

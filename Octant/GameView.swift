@@ -255,6 +255,16 @@ struct BitToggleView: View {
     let disabled: Bool
     let action: () -> Void
 
+    #if os(tvOS)
+    private let toggleWidth: CGFloat = 96
+    private let toggleHeight: CGFloat = 150
+    private let glyphSize: CGFloat = 60
+    #else
+    private let toggleWidth: CGFloat = 56
+    private let toggleHeight: CGFloat = 90
+    private let glyphSize: CGFloat = 36
+    #endif
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
@@ -273,7 +283,7 @@ struct BitToggleView: View {
                             : LinearGradient(colors: [Color.surface2, Color.surfaceInset],
                                              startPoint: .top, endPoint: .bottom)
                         )
-                        .frame(width: 56, height: 90)
+                        .frame(width: toggleWidth, height: toggleHeight)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
                                 .strokeBorder(
@@ -288,11 +298,12 @@ struct BitToggleView: View {
                                 y: isOn ? 4 : 2)
 
                     Text(verbatim: isOn ? "1" : "0")
-                        .font(.system(size: 36, weight: .heavy, design: .monospaced))
+                        .font(.system(size: glyphSize, weight: .heavy, design: .monospaced))
                         .foregroundStyle(isOn ? Color.black.opacity(0.85) : .white.opacity(0.32))
                 }
                 .scaleEffect(isOn ? 1.04 : 1.0)
                 .animation(.spring(response: 0.32, dampingFraction: 0.55), value: isOn)
+                .tvFocusRing(cornerRadius: 12)
             }
         }
         .buttonStyle(.plain)
