@@ -11,9 +11,12 @@ private func formatTime(_ seconds: Int) -> String {
 struct HostLobbyView: View {
     @ObservedObject var session: MultiplayerSession
     let onLeave: () -> Void
+    @State private var showNeedPlayersAlert = false
+
+    private var canStart: Bool { session.players.count >= 2 }
 
     var body: some View {
-        VStack(spacing: 22) {
+        VStack(spacing: 0) {
             HStack {
                 BackButton(action: onLeave)
                 Spacer()
@@ -24,33 +27,50 @@ struct HostLobbyView: View {
                 Spacer()
                 Color.clear.frame(width: 80)
             }
+            .focusSection()
+            .padding(.bottom, 22)
 
-            VStack(spacing: 6) {
-                Text(verbatim: session.hostServiceName)
-                    .font(.system(.title3, design: .monospaced).weight(.bold))
-                    .foregroundStyle(.white)
-                Text("Players on your network can join from their Octant.")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundStyle(.white.opacity(0.5))
-                    .multilineTextAlignment(.center)
-            }
-            .panel(padding: 16)
-
-            ConfigPanel(session: session)
-
-            PlayersPanel(session: session, kickEnabled: true)
-
-            Spacer(minLength: 0)
-
-            Button { session.startGame() } label: {
-                HStack(spacing: 12) {
-                    Image(systemName: "play.fill")
-                    Text("START GAME").tracking(3)
+            VStack(spacing: 22) {
+                VStack(spacing: 6) {
+                    Text(verbatim: session.hostServiceName)
+                        .font(.system(.title3, design: .monospaced).weight(.bold))
+                        .foregroundStyle(.white)
+                    Text("Players on your network can join from their Octant.")
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.5))
+                        .multilineTextAlignment(.center)
                 }
+                .panel(padding: 16)
+
+                ConfigPanel(session: session)
+
+                PlayersPanel(session: session, kickEnabled: true)
+
+                #if !os(tvOS)
+                Spacer(minLength: 0)
+                #endif
+
+                Button {
+                    if canStart {
+                        session.startGame()
+                    } else {
+                        showNeedPlayersAlert = true
+                    }
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "play.fill")
+                        Text("START GAME").tracking(3)
+                    }
+                }
+                .buttonStyle(PrimaryButtonStyle())
+                .opacity(canStart ? 1 : 0.5)
             }
-            .buttonStyle(PrimaryButtonStyle())
-            .disabled(session.players.count < 2)
-            .opacity(session.players.count < 2 ? 0.5 : 1)
+            .focusSection()
+        }
+        .alert("Waiting for Players", isPresented: $showNeedPlayersAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("At least 2 players are needed to start.")
         }
     }
 }
@@ -60,7 +80,7 @@ struct BrowseView: View {
     let onLeave: () -> Void
 
     var body: some View {
-        VStack(spacing: 22) {
+        VStack(spacing: 0) {
             HStack {
                 BackButton(action: onLeave)
                 Spacer()
@@ -71,57 +91,64 @@ struct BrowseView: View {
                 Spacer()
                 Color.clear.frame(width: 80)
             }
+            .focusSection()
+            .padding(.bottom, 22)
 
-            VStack(spacing: 6) {
-                Text("Looking for hosts…")
-                    .font(.system(.title3, design: .monospaced).weight(.bold))
-                    .foregroundStyle(.white)
-                ProgressView()
-                    .controlSize(.small)
-                    .tint(Color.accent)
-                    .padding(.top, 4)
-            }
-            .panel(padding: 18)
+            VStack(spacing: 22) {
+                VStack(spacing: 6) {
+                    Text("Looking for hosts…")
+                        .font(.system(.title3, design: .monospaced).weight(.bold))
+                        .foregroundStyle(.white)
+                    ProgressView()
+                        .controlSize(.small)
+                        .tint(Color.accent)
+                        .padding(.top, 4)
+                }
+                .panel(padding: 18)
 
-            VStack(spacing: 8) {
-                if session.discoveredHosts.isEmpty {
-                    Text("No hosts found yet.")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundStyle(.white.opacity(0.5))
-                        .padding(28)
-                } else {
-                    ForEach(session.discoveredHosts) { host in
-                        Button { session.joinHost(host) } label: {
-                            HStack {
-                                Image(systemName: "antenna.radiowaves.left.and.right")
-                                    .foregroundStyle(Color.accent)
-                                Text(verbatim: host.name)
-                                    .font(.system(.body, design: .monospaced).weight(.semibold))
-                                    .foregroundStyle(.white)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.caption)
-                                    .foregroundStyle(.white.opacity(0.4))
+                VStack(spacing: 8) {
+                    if session.discoveredHosts.isEmpty {
+                        Text("No hosts found yet.")
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.5))
+                            .padding(28)
+                    } else {
+                        ForEach(session.discoveredHosts) { host in
+                            Button { session.joinHost(host) } label: {
+                                HStack {
+                                    Image(systemName: "antenna.radiowaves.left.and.right")
+                                        .foregroundStyle(Color.accent)
+                                    Text(verbatim: host.name)
+                                        .font(.system(.body, design: .monospaced).weight(.semibold))
+                                        .foregroundStyle(.white)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption)
+                                        .foregroundStyle(.white.opacity(0.4))
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 14)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .fill(Color.surface2)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
+                                )
+                                .tvFocusRing(cornerRadius: 12)
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 14)
-                            .background(
-                                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .fill(Color.surface2)
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
-                            )
-                            .tvFocusRing(cornerRadius: 12)
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
-            }
-            .panel(padding: 14)
+                .panel(padding: 14)
 
-            Spacer(minLength: 0)
+                #if !os(tvOS)
+                Spacer(minLength: 0)
+                #endif
+            }
+            .focusSection()
         }
     }
 }
@@ -131,7 +158,7 @@ struct ClientLobbyView: View {
     let onLeave: () -> Void
 
     var body: some View {
-        VStack(spacing: 22) {
+        VStack(spacing: 0) {
             HStack {
                 BackButton(action: onLeave)
                 Spacer()
@@ -142,22 +169,29 @@ struct ClientLobbyView: View {
                 Spacer()
                 Color.clear.frame(width: 80)
             }
+            .focusSection()
+            .padding(.bottom, 22)
 
-            VStack(spacing: 6) {
-                Text("Connected.")
-                    .font(.system(.title3, design: .monospaced).weight(.bold))
-                    .foregroundStyle(.white)
-                Text("Waiting for the host to start.")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundStyle(.white.opacity(0.5))
-            }
+            VStack(spacing: 22) {
+                VStack(spacing: 6) {
+                    Text("Connected.")
+                        .font(.system(.title3, design: .monospaced).weight(.bold))
+                        .foregroundStyle(.white)
+                    Text("Waiting for the host to start.")
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.5))
+                }
             .panel(padding: 16)
 
             ConfigSummary(config: session.config)
 
             PlayersPanel(session: session, kickEnabled: false)
 
+            #if !os(tvOS)
             Spacer(minLength: 0)
+            #endif
+            }
+            .focusSection()
         }
     }
 }
@@ -287,17 +321,26 @@ private struct StepButton: View {
     let systemName: String
     let action: () -> Void
 
+    #if os(tvOS)
+    private let buttonSize: CGFloat = 48
+    private let iconSize: CGFloat = 18
+    #else
+    private let buttonSize: CGFloat = 32
+    private let iconSize: CGFloat = 14
+    #endif
+
     var body: some View {
         Button(action: action) {
             Image(systemName: systemName)
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: iconSize, weight: .bold))
                 .foregroundStyle(.white.opacity(0.85))
-                .frame(width: 32, height: 32)
+                .frame(width: buttonSize, height: buttonSize)
                 .background(Circle().fill(Color.surface2))
                 .overlay(Circle().strokeBorder(Color.white.opacity(0.1), lineWidth: 1))
-                .tvFocusRing(cornerRadius: 16)
+                .tvFocusRing(cornerRadius: buttonSize / 2)
         }
         .buttonStyle(.plain)
+        .focusEffectDisabled()
     }
 }
 

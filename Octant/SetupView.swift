@@ -28,6 +28,7 @@ struct SetupView: View {
                 MaxRow(value: model.maxNumber)
             }
             .panel()
+            .focusSection()
 
             Spacer(minLength: 0)
 
@@ -168,19 +169,27 @@ private struct StepButton: View {
     let systemName: String
     let action: () -> Void
 
+    #if os(tvOS)
+    private let buttonSize: CGFloat = 48
+    private let iconSize: CGFloat = 18
+    #else
+    private let buttonSize: CGFloat = 36
+    private let iconSize: CGFloat = 14
+    #endif
+
     var body: some View {
         Button(action: action) {
             Image(systemName: systemName)
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: iconSize, weight: .bold))
                 .foregroundStyle(.white.opacity(0.85))
-                .frame(width: 36, height: 36)
+                .frame(width: buttonSize, height: buttonSize)
                 .background(
                     Circle().fill(Color.surface2)
                 )
                 .overlay(
                     Circle().strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
                 )
-                .tvFocusRing(cornerRadius: 18)
+                .tvFocusRing(cornerRadius: buttonSize / 2)
         }
         .buttonStyle(.plain)
         .focusEffectDisabled()

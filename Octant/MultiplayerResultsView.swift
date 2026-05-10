@@ -5,7 +5,7 @@ struct RoundResultsView: View {
     let onLeave: () -> Void
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 0) {
             HStack {
                 BackButton(action: onLeave)
                 Spacer()
@@ -16,25 +16,32 @@ struct RoundResultsView: View {
                 Spacer()
                 Color.clear.frame(width: 80)
             }
+            .focusSection()
+            .padding(.bottom, 20)
 
-            if let result = session.roundResults.last {
-                TargetSummary(target: result.target, bitsCount: result.bitsCount)
-                ScoreList(scores: sorted(result.scores), localID: session.localPlayerID)
-            }
-
-            Spacer(minLength: 0)
-
-            if session.isAdmin {
-                Button { session.nextRound() } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: hasMoreRounds ? "arrow.right.circle.fill" : "flag.checkered")
-                        Text(hasMoreRounds ? "NEXT ROUND" : "FINISH").tracking(3)
-                    }
+            VStack(spacing: 20) {
+                if let result = session.roundResults.last {
+                    TargetSummary(target: result.target, bitsCount: result.bitsCount)
+                    ScoreList(scores: sorted(result.scores), localID: session.localPlayerID)
                 }
-                .buttonStyle(PrimaryButtonStyle())
-            } else {
-                WaitingForHostBar()
+
+                #if !os(tvOS)
+                Spacer(minLength: 0)
+                #endif
+
+                if session.isAdmin {
+                    Button { session.nextRound() } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: hasMoreRounds ? "arrow.right.circle.fill" : "flag.checkered")
+                            Text(hasMoreRounds ? "NEXT ROUND" : "FINISH").tracking(3)
+                        }
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                } else {
+                    WaitingForHostBar()
+                }
             }
+            .focusSection()
         }
     }
 
@@ -56,44 +63,51 @@ struct FinalResultsView: View {
     let onLeave: () -> Void
 
     var body: some View {
-        VStack(spacing: 22) {
+        VStack(spacing: 0) {
             HStack {
                 BackButton(action: onLeave)
                 Spacer()
                 Color.clear.frame(width: 80)
             }
+            .focusSection()
+            .padding(.bottom, 22)
 
-            VStack(spacing: 10) {
-                Text("FINAL")
-                    .font(.system(size: 48, weight: .black, design: .monospaced))
-                    .tracking(10)
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [Color.accentBright, Color.accent],
-                            startPoint: .top, endPoint: .bottom
+            VStack(spacing: 22) {
+                VStack(spacing: 10) {
+                    Text("FINAL")
+                        .font(.system(size: 48, weight: .black, design: .monospaced))
+                        .tracking(10)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [Color.accentBright, Color.accent],
+                                startPoint: .top, endPoint: .bottom
+                            )
                         )
-                    )
-                    .shadow(color: Color.accent.opacity(0.4), radius: 14, y: 2)
+                        .shadow(color: Color.accent.opacity(0.4), radius: 14, y: 2)
 
-                if let winner = session.finalStandings.first {
-                    Text("\(winner.playerName) wins!")
-                        .font(.system(.title3, design: .monospaced).weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.8))
+                    if let winner = session.finalStandings.first {
+                        Text("\(winner.playerName) wins!")
+                            .font(.system(.title3, design: .monospaced).weight(.semibold))
+                            .foregroundStyle(.white.opacity(0.8))
+                    }
                 }
-            }
-            .padding(.top, 6)
+                .padding(.top, 6)
 
-            StandingsList(standings: session.finalStandings, localID: session.localPlayerID)
+                StandingsList(standings: session.finalStandings, localID: session.localPlayerID)
 
-            Spacer(minLength: 0)
+                #if !os(tvOS)
+                Spacer(minLength: 0)
+                #endif
 
-            Button(action: onLeave) {
-                HStack(spacing: 12) {
-                    Image(systemName: "house.fill")
-                    Text("MAIN MENU").tracking(3)
+                Button(action: onLeave) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "house.fill")
+                        Text("MAIN MENU").tracking(3)
+                    }
                 }
+                .buttonStyle(PrimaryButtonStyle())
             }
-            .buttonStyle(PrimaryButtonStyle())
+            .focusSection()
         }
     }
 }
@@ -126,6 +140,24 @@ private struct TargetSummary: View {
     }
 }
 
+private enum Col {
+    #if os(tvOS)
+    static let rank: CGFloat = 36
+    static let wins: CGFloat = 80
+    static let time: CGFloat = 100
+    static let clicks: CGFloat = 90
+    static let maxScoreHeight: CGFloat = 200
+    static let maxStandingsHeight: CGFloat = 240
+    #else
+    static let rank: CGFloat = 28
+    static let wins: CGFloat = 60
+    static let time: CGFloat = 78
+    static let clicks: CGFloat = 64
+    static let maxScoreHeight: CGFloat = 320
+    static let maxStandingsHeight: CGFloat = 360
+    #endif
+}
+
 private struct ScoreList: View {
     let scores: [PlayerScore]
     let localID: UUID
@@ -133,10 +165,10 @@ private struct ScoreList: View {
     var body: some View {
         VStack(spacing: 8) {
             HStack {
-                Text(verbatim: "#").frame(width: 28, alignment: .leading)
+                Text(verbatim: "#").frame(width: Col.rank, alignment: .leading)
                 Text("PLAYER").frame(maxWidth: .infinity, alignment: .leading)
-                Text("TIME").frame(width: 78, alignment: .trailing)
-                Text("CLICKS").frame(width: 64, alignment: .trailing)
+                Text("TIME").frame(width: Col.time, alignment: .trailing)
+                Text("CLICKS").frame(width: Col.clicks, alignment: .trailing)
             }
             .font(.system(.caption, design: .monospaced).weight(.semibold))
             .tracking(1.5)
@@ -152,7 +184,7 @@ private struct ScoreList: View {
                 .padding(.horizontal, 10)
                 .padding(.bottom, 10)
             }
-            .frame(maxHeight: 320)
+            .frame(maxHeight: Col.maxScoreHeight)
         }
         .padding(.vertical, 14)
         .background(
@@ -174,24 +206,24 @@ private struct ScoreRow: View {
     var body: some View {
         HStack {
             Text(verbatim: "\(rank)")
-                .frame(width: 28, alignment: .leading)
+                .frame(width: Col.rank, alignment: .leading)
                 .foregroundStyle(rank == 1 ? Color.accent : .white.opacity(0.4))
             Text(verbatim: score.playerName)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .foregroundStyle(.white)
             if score.solved {
                 Text(verbatim: String(format: "%.1fs", score.time))
-                    .frame(width: 78, alignment: .trailing)
+                    .frame(width: Col.time, alignment: .trailing)
                     .foregroundStyle(rank == 1 ? Color.accent : .white.opacity(0.85))
                 Text(verbatim: "\(score.clicks)")
-                    .frame(width: 64, alignment: .trailing)
+                    .frame(width: Col.clicks, alignment: .trailing)
                     .foregroundStyle(.white.opacity(0.85))
             } else {
                 Text(verbatim: "—")
-                    .frame(width: 78, alignment: .trailing)
+                    .frame(width: Col.time, alignment: .trailing)
                     .foregroundStyle(.white.opacity(0.35))
                 Text(verbatim: "—")
-                    .frame(width: 64, alignment: .trailing)
+                    .frame(width: Col.clicks, alignment: .trailing)
                     .foregroundStyle(.white.opacity(0.35))
             }
         }
@@ -216,11 +248,11 @@ private struct StandingsList: View {
     var body: some View {
         VStack(spacing: 8) {
             HStack {
-                Text(verbatim: "#").frame(width: 28, alignment: .leading)
+                Text(verbatim: "#").frame(width: Col.rank, alignment: .leading)
                 Text("PLAYER").frame(maxWidth: .infinity, alignment: .leading)
-                Text("WINS").frame(width: 60, alignment: .trailing)
-                Text("TIME").frame(width: 78, alignment: .trailing)
-                Text("CLICKS").frame(width: 64, alignment: .trailing)
+                Text("WINS").frame(width: Col.wins, alignment: .trailing)
+                Text("TIME").frame(width: Col.time, alignment: .trailing)
+                Text("CLICKS").frame(width: Col.clicks, alignment: .trailing)
             }
             .font(.system(.caption, design: .monospaced).weight(.semibold))
             .tracking(1.5)
@@ -236,7 +268,7 @@ private struct StandingsList: View {
                 .padding(.horizontal, 10)
                 .padding(.bottom, 10)
             }
-            .frame(maxHeight: 360)
+            .frame(maxHeight: Col.maxStandingsHeight)
         }
         .padding(.vertical, 14)
         .background(
@@ -258,7 +290,7 @@ private struct StandingRow: View {
     var body: some View {
         HStack {
             Text(verbatim: "\(rank)")
-                .frame(width: 28, alignment: .leading)
+                .frame(width: Col.rank, alignment: .leading)
                 .foregroundStyle(rank == 1 ? Color.accent : .white.opacity(0.4))
             HStack(spacing: 6) {
                 if rank == 1 {
@@ -269,13 +301,13 @@ private struct StandingRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             Text(verbatim: "\(standing.roundsSolved)")
-                .frame(width: 60, alignment: .trailing)
+                .frame(width: Col.wins, alignment: .trailing)
                 .foregroundStyle(.white.opacity(0.85))
             Text(verbatim: String(format: "%.1fs", standing.totalTime))
-                .frame(width: 78, alignment: .trailing)
+                .frame(width: Col.time, alignment: .trailing)
                 .foregroundStyle(.white.opacity(0.85))
             Text(verbatim: "\(standing.totalClicks)")
-                .frame(width: 64, alignment: .trailing)
+                .frame(width: Col.clicks, alignment: .trailing)
                 .foregroundStyle(.white.opacity(0.85))
         }
         .font(.system(.body, design: .monospaced).weight(.semibold))

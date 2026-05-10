@@ -8,7 +8,7 @@ struct MultiplayerGameView: View {
     private let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        VStack(spacing: 18) {
+        VStack(spacing: 0) {
             HStack {
                 BackButton(action: onLeave)
                 Spacer()
@@ -23,33 +23,38 @@ struct MultiplayerGameView: View {
                 Spacer()
                 Color.clear.frame(width: 80)
             }
+            .focusSection()
+            .padding(.bottom, 18)
 
-            HeaderRow(
-                roundCurrent: session.currentRound,
-                roundTotal: session.totalRounds,
-                elapsed: elapsed
-            )
+            VStack(spacing: 18) {
+                HeaderRow(
+                    roundCurrent: session.currentRound,
+                    roundTotal: session.totalRounds,
+                    elapsed: elapsed
+                )
 
-            TargetPanel(
-                target: session.currentTarget,
-                current: session.currentValue,
-                progress: progressFraction
-            )
+                TargetPanel(
+                    target: session.currentTarget,
+                    current: session.currentValue,
+                    progress: progressFraction
+                )
 
-            if session.hasFinishedRound {
-                FinishedBanner(time: session.lastSolveTime, clicks: session.clicks)
+                if session.hasFinishedRound {
+                    FinishedBanner(time: session.lastSolveTime, clicks: session.clicks)
+                }
+
+                BitRow(
+                    bitsCount: session.currentBitsCount,
+                    bits: session.bits,
+                    isResolving: session.isResolving || session.hasFinishedRound,
+                    onToggle: { session.toggleBit($0) }
+                )
+
+                BinaryReadout(text: session.binaryString)
+
+                Spacer(minLength: 0)
             }
-
-            BitRow(
-                bitsCount: session.currentBitsCount,
-                bits: session.bits,
-                isResolving: session.isResolving || session.hasFinishedRound,
-                onToggle: { session.toggleBit($0) }
-            )
-
-            BinaryReadout(text: session.binaryString)
-
-            Spacer(minLength: 0)
+            .focusSection()
         }
         .onReceive(timer) { _ in
             if session.phase == .playing && !session.isResolving && !session.hasFinishedRound {
@@ -201,6 +206,7 @@ private struct BitRow: View {
                 }
             }
             .frame(maxWidth: .infinity)
+            .focusSection()
         }
     }
 
