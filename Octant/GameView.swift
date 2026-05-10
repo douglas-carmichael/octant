@@ -143,6 +143,7 @@ private struct BitRow: View {
                 }
             }
             .frame(maxWidth: .infinity)
+            .focusSection()
         }
     }
 
@@ -307,6 +308,7 @@ struct BitToggleView: View {
             }
         }
         .buttonStyle(.plain)
+        .focusEffectDisabled()
         .disabled(disabled)
         .opacity(disabled ? 0.55 : 1.0)
     }

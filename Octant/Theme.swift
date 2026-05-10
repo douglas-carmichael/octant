@@ -17,6 +17,12 @@ struct Panel: ViewModifier {
     var padding: CGFloat = 22
     var cornerRadius: CGFloat = 16
 
+    #if os(tvOS)
+    private let borderWidth: CGFloat = 0.5
+    #else
+    private let borderWidth: CGFloat = 1
+    #endif
+
     func body(content: Content) -> some View {
         content
             .padding(padding)
@@ -32,7 +38,7 @@ struct Panel: ViewModifier {
                             colors: [Color.white.opacity(0.08), Color.white.opacity(0)],
                             startPoint: .top, endPoint: .bottom
                         ),
-                        lineWidth: 1
+                        lineWidth: borderWidth
                     )
             )
             .shadow(color: .black.opacity(0.45), radius: 18, y: 8)
@@ -47,6 +53,18 @@ extension View {
 
 struct PrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
+        PrimaryButtonBody(configuration: configuration)
+    }
+}
+
+private struct PrimaryButtonBody: View {
+    let configuration: ButtonStyleConfiguration
+    #if os(tvOS)
+    @Environment(\.isFocused) private var isFocused
+    @State private var pulsing = false
+    #endif
+
+    var body: some View {
         configuration.label
             .font(.system(.title3, design: .monospaced).weight(.semibold))
             .foregroundStyle(Color.black.opacity(0.92))
@@ -73,6 +91,19 @@ struct PrimaryButtonStyle: ButtonStyle {
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             .animation(.spring(response: 0.22, dampingFraction: 0.8),
                        value: configuration.isPressed)
+            #if os(tvOS)
+            .scaleEffect(pulsing ? 1.03 : 1.0)
+            .shadow(color: Color.accent.opacity(pulsing ? 0.6 : 0), radius: 20)
+            .animation(
+                pulsing
+                    ? .easeInOut(duration: 0.8).repeatForever(autoreverses: true)
+                    : .easeInOut(duration: 0.3),
+                value: pulsing
+            )
+            .onChange(of: isFocused) { _, focused in
+                pulsing = focused
+            }
+            #endif
     }
 }
 
@@ -80,17 +111,20 @@ struct PrimaryButtonStyle: ButtonStyle {
 struct TVFocusRing: ViewModifier {
     var cornerRadius: CGFloat = 12
     @Environment(\.isFocused) private var isFocused
+    @State private var pulsing = false
 
     func body(content: Content) -> some View {
         content
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(Color.accentBright, lineWidth: isFocused ? 4 : 0)
-                    .shadow(color: Color.accent.opacity(isFocused ? 0.6 : 0), radius: 16)
-                    .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isFocused)
+            .shadow(color: Color.accent.opacity(pulsing ? 0.7 : 0), radius: pulsing ? 12 : 0)
+            .animation(
+                pulsing
+                    ? .easeInOut(duration: 0.8).repeatForever(autoreverses: true)
+                    : .easeInOut(duration: 0.3),
+                value: pulsing
             )
-            .scaleEffect(isFocused ? 1.08 : 1.0)
-            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isFocused)
+            .onChange(of: isFocused) { _, focused in
+                pulsing = focused
+            }
     }
 }
 

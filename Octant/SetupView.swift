@@ -54,10 +54,20 @@ struct SetupView: View {
 }
 
 private struct Wordmark: View {
+    #if os(tvOS)
+    private let titleSize: CGFloat = 76
+    private let subtitleSize: CGFloat = 16
+    private let dashWidth: CGFloat = 32
+    #else
+    private let titleSize: CGFloat = 56
+    private let subtitleSize: CGFloat = 11
+    private let dashWidth: CGFloat = 24
+    #endif
+
     var body: some View {
         VStack(spacing: 12) {
             Text(verbatim: "OCTANT")
-                .font(.system(size: 56, weight: .black, design: .monospaced))
+                .font(.system(size: titleSize, weight: .black, design: .monospaced))
                 .tracking(10)
                 .foregroundStyle(
                     LinearGradient(
@@ -70,15 +80,15 @@ private struct Wordmark: View {
             HStack(spacing: 12) {
                 Rectangle()
                     .fill(Color.accent)
-                    .frame(width: 24, height: 2)
+                    .frame(width: dashWidth, height: 2)
                 Text("binary speed trainer")
-                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .font(.system(size: subtitleSize, weight: .medium, design: .monospaced))
                     .tracking(3)
                     .textCase(.uppercase)
                     .foregroundStyle(Color.accent.opacity(0.85))
                 Rectangle()
                     .fill(Color.accent)
-                    .frame(width: 24, height: 2)
+                    .frame(width: dashWidth, height: 2)
             }
         }
     }
@@ -173,10 +183,17 @@ private struct StepButton: View {
                 .tvFocusRing(cornerRadius: 18)
         }
         .buttonStyle(.plain)
+        .focusEffectDisabled()
     }
 }
 
 struct CreditsFooter: View {
+    #if os(tvOS)
+    private let portRoleLabel: LocalizedStringKey = "tvOS port"
+    #else
+    private let portRoleLabel: LocalizedStringKey = "macOS port"
+    #endif
+
     var body: some View {
         VStack(spacing: 6) {
             CreditLine(
@@ -186,7 +203,7 @@ struct CreditsFooter: View {
                 email: "amaury@crocque.fr"
             )
             CreditLine(
-                role: "macOS port",
+                role: portRoleLabel,
                 name: "Douglas Carmichael",
                 githubHandle: "douglas-carmichael",
                 email: "dcarmich@dcarmichael.net"
@@ -208,11 +225,16 @@ private struct CreditLine: View {
                 .foregroundStyle(.white.opacity(0.32))
                 .textCase(.uppercase)
                 .tracking(1.5)
+                #if os(tvOS)
+                .frame(width: 120, alignment: .trailing)
+                #else
                 .frame(width: 76, alignment: .leading)
+                #endif
 
             Text(verbatim: name)
                 .foregroundStyle(.white.opacity(0.55))
 
+            #if !os(tvOS)
             Spacer()
 
             Link(destination: URL(string: "https://github.com/\(githubHandle)")!) {
@@ -226,8 +248,14 @@ private struct CreditLine: View {
                     .foregroundStyle(Color.accent.opacity(0.7))
             }
             .help(email)
+            #endif
         }
+        #if os(tvOS)
+        .font(.system(size: 16, weight: .medium, design: .monospaced))
+        .frame(maxWidth: .infinity)
+        #else
         .font(.system(size: 10, weight: .medium, design: .monospaced))
+        #endif
         .padding(.horizontal, 4)
     }
 }

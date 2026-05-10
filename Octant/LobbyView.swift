@@ -390,6 +390,7 @@ struct BackButton: View {
             .tvFocusRing(cornerRadius: 8)
         }
         .buttonStyle(.plain)
+        .focusEffectDisabled()
         .frame(width: 80, alignment: .leading)
     }
 }

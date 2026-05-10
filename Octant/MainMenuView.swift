@@ -80,6 +80,7 @@ struct MainMenuView: View {
                     icon: "magnifyingglass"
                 ) { coordinator.startBrowsing() }
             }
+            .focusEffectDisabled()
             .padding(.horizontal, 4)
 
             Spacer(minLength: 0)
@@ -112,10 +113,20 @@ struct MainMenuView: View {
 }
 
 private struct Wordmark: View {
+    #if os(tvOS)
+    private let titleSize: CGFloat = 76
+    private let subtitleSize: CGFloat = 16
+    private let dashWidth: CGFloat = 32
+    #else
+    private let titleSize: CGFloat = 56
+    private let subtitleSize: CGFloat = 11
+    private let dashWidth: CGFloat = 24
+    #endif
+
     var body: some View {
         VStack(spacing: 12) {
             Text(verbatim: "OCTANT")
-                .font(.system(size: 56, weight: .black, design: .monospaced))
+                .font(.system(size: titleSize, weight: .black, design: .monospaced))
                 .tracking(10)
                 .foregroundStyle(
                     LinearGradient(
@@ -128,15 +139,15 @@ private struct Wordmark: View {
             HStack(spacing: 12) {
                 Rectangle()
                     .fill(Color.accent)
-                    .frame(width: 24, height: 2)
+                    .frame(width: dashWidth, height: 2)
                 Text("binary speed trainer")
-                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .font(.system(size: subtitleSize, weight: .medium, design: .monospaced))
                     .tracking(3)
                     .textCase(.uppercase)
                     .foregroundStyle(Color.accent.opacity(0.85))
                 Rectangle()
                     .fill(Color.accent)
-                    .frame(width: 24, height: 2)
+                    .frame(width: dashWidth, height: 2)
             }
         }
     }
@@ -151,14 +162,24 @@ private struct MuteButton: View {
             if !muted { SoundPlayer.shared.play(.nav) }
         } label: {
             Image(systemName: muted ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                #if os(tvOS)
+                .font(.system(size: 24, weight: .semibold))
+                .foregroundStyle(muted ? .white.opacity(0.5) : Color.accent)
+                .frame(width: 56, height: 56)
+                .background(Circle().fill(Color.surface2))
+                .overlay(Circle().strokeBorder(Color.white.opacity(0.1), lineWidth: 1))
+                .tvFocusRing(cornerRadius: 28)
+                #else
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(muted ? .white.opacity(0.5) : Color.accent)
                 .frame(width: 36, height: 36)
                 .background(Circle().fill(Color.surface2))
                 .overlay(Circle().strokeBorder(Color.white.opacity(0.1), lineWidth: 1))
                 .tvFocusRing(cornerRadius: 18)
+                #endif
         }
         .buttonStyle(.plain)
+        .focusEffectDisabled()
         .accessibilityLabel(muted ? "Unmute audio" : "Mute audio")
     }
 }
@@ -197,13 +218,16 @@ private struct MenuButton: View {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .fill(Color.surface1)
             )
+            #if !os(tvOS)
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
             )
+            #endif
             .shadow(color: .black.opacity(0.3), radius: 10, y: 4)
             .tvFocusRing(cornerRadius: 14)
         }
         .buttonStyle(.plain)
+        .focusEffectDisabled()
     }
 }

@@ -28,6 +28,8 @@ struct ContentView: View {
             #if os(tvOS)
             .padding(.horizontal, 90)
             .padding(.vertical, 40)
+            .focusEffectDisabled()
+            .hoverEffectDisabled()
             #else
             .padding(.horizontal, 28)
             .padding(.vertical, 16)
@@ -113,6 +115,7 @@ struct ContentView: View {
                 BackButton { coordinator.goToMainMenu() }
                 Spacer()
             }
+            .focusSection()
             .padding(.bottom, 8)
 
             switch coordinator.gameModel.phase {
