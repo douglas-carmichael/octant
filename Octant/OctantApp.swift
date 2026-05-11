@@ -78,6 +78,10 @@ struct OctantApp: App {
     }
     #endif
 
+    #if os(tvOS)
+    @Environment(\.scenePhase) private var scenePhase
+    #endif
+
     var body: some Scene {
         #if os(macOS)
         WindowGroup {
@@ -104,6 +108,13 @@ struct OctantApp: App {
             ContentView()
                 .preferredColorScheme(.dark)
         }
+        #if os(tvOS)
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background {
+                exit(0)
+            }
+        }
+        #endif
         #endif
     }
 }
