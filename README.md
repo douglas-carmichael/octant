@@ -8,7 +8,7 @@
 
 ## English
 
-Octant is a macOS port of [**Binary Game**](https://github.com/lapatatedouce59/binary), a browser-based exercise built by [Amaury Crocquefer](https://github.com/lapatatedouce59) ([amaury@crocque.fr](mailto:amaury@crocque.fr)) to help students learn decimal-to-binary conversion. This version is a from-scratch SwiftUI rebuild with a polished UI, EN/FR localization, haptics, and native macOS menu commands.
+Octant is a macOS/tvOS port of [**Binary Game**](https://github.com/lapatatedouce59/binary), a browser-based exercise built by [Amaury Crocquefer](https://github.com/lapatatedouce59) ([amaury@crocque.fr](mailto:amaury@crocque.fr)) to help students learn decimal-to-binary conversion. This version is a from-scratch SwiftUI rebuild with a polished UI, EN/FR localization, haptics, and native macOS menu commands.
 
 The name comes from *octant*, the navigator's instrument that measures one-eighth of a circle — a nod to the eight bits in a byte.
 
@@ -53,7 +53,7 @@ xcodebuild -project Octant.xcodeproj -scheme Octant -configuration Release build
 ### Credits
 
 - **Original game** — [Binary Game](https://github.com/lapatatedouce59/binary) by [Amaury Crocquefer](https://github.com/lapatatedouce59) · [amaury@crocque.fr](mailto:amaury@crocque.fr)
-- **macOS port** — [Douglas Carmichael](https://github.com/douglas-carmichael) · [dcarmich@dcarmichael.net](mailto:dcarmich@dcarmichael.net)
+- **macOS/tvOS port** — [Douglas Carmichael](https://github.com/douglas-carmichael) · [dcarmich@dcarmichael.net](mailto:dcarmich@dcarmichael.net)
 
 ---
 
@@ -104,4 +104,4 @@ xcodebuild -project Octant.xcodeproj -scheme Octant -configuration Release build
 ### Crédits
 
 - **Jeu original** — [Binary Game](https://github.com/lapatatedouce59/binary) par [Amaury Crocquefer](https://github.com/lapatatedouce59) · [amaury@crocque.fr](mailto:amaury@crocque.fr)
-- **Portage macOS** — [Douglas Carmichael](https://github.com/douglas-carmichael) · [dcarmich@dcarmichael.net](mailto:dcarmich@dcarmichael.net)
+- **Portage macOS/tvOS** — [Douglas Carmichael](https://github.com/douglas-carmichael) · [dcarmich@dcarmichael.net](mailto:dcarmich@dcarmichael.net)
