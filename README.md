@@ -1,6 +1,6 @@
 # Octant
 
-**Binary speed trainer for macOS.**
+**Binary speed trainer for macOS/tvOS.**
 
 [English](#english) · [Français](#français)
 
@@ -59,7 +59,7 @@ xcodebuild -project Octant.xcodeproj -scheme Octant -configuration Release build
 
 ## Français
 
-Octant est un portage macOS de [**Binary Game**](https://github.com/lapatatedouce59/binary), un exercice web créé par [Amaury Crocquefer](https://github.com/lapatatedouce59) ([amaury@crocque.fr](mailto:amaury@crocque.fr)) pour aider les étudiants à apprendre la conversion décimal–binaire. Cette version est une réécriture complète en SwiftUI, avec une interface soignée, une localisation EN/FR, du retour haptique et des commandes de menu natives macOS.
+Octant est un portage macOS et tvOS de [**Binary Game**](https://github.com/lapatatedouce59/binary), un exercice web créé par [Amaury Crocquefer](https://github.com/lapatatedouce59) ([amaury@crocque.fr](mailto:amaury@crocque.fr)) pour aider les étudiants à apprendre la conversion décimal–binaire. Cette version est une réécriture complète en SwiftUI, avec une interface soignée, une localisation EN/FR, du retour haptique et des commandes de menu natives macOS.
 
 Le nom vient de l'*octant*, l'instrument du navigateur qui mesure un huitième de cercle — un clin d'œil aux huit bits d'un octet.
 
