@@ -20,13 +20,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create GitHub release
+      - name: Create or update GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" \
-            --title "${GITHUB_REF_NAME}" \
-            --generate-notes
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            echo "Release ${GITHUB_REF_NAME} already exists; syncing to the tagged commit."
+            gh release edit "${GITHUB_REF_NAME}" --target "${GITHUB_SHA}"
+          else
+            gh release create "${GITHUB_REF_NAME}" \
+              --title "${GITHUB_REF_NAME}" \
+              --generate-notes
+          fi
 
       - name: Build macOS app (unsigned)
         continue-on-error: true
