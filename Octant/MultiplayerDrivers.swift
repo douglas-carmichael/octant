@@ -55,7 +55,7 @@ final class HostDriver: NetSessionDriver {
         let fallback = MultiplayerSession.defaultPlayerName()
         #endif
         let base = trimmed.isEmpty ? fallback : trimmed
-        let format = NSLocalizedString("host.service.name", value: "%@'s Octant", comment: "Bonjour service name")
+        let format = LanguageManager.localized("host.service.name", value: "%@'s Octant")
         return String(format: format, base)
     }
 
@@ -101,18 +101,18 @@ final class HostDriver: NetSessionDriver {
                 #if DEBUG
                 NSLog("[HostDriver] rejecting: lobby full")
                 #endif
-                peer.sendAndClose(.error(message: NSLocalizedString("error.lobbyFull", value: "The lobby is full.", comment: "")))
+                peer.sendAndClose(.error(message: LanguageManager.localized("error.lobbyFull", value: "The lobby is full.")))
                 return
             }
             if session.phase != .hostLobby {
                 #if DEBUG
                 NSLog("[HostDriver] rejecting: not in lobby, phase=\(session.phase)")
                 #endif
-                peer.sendAndClose(.error(message: NSLocalizedString("error.gameInProgress", value: "A game is already in progress.", comment: "")))
+                peer.sendAndClose(.error(message: LanguageManager.localized("error.gameInProgress", value: "A game is already in progress.")))
                 return
             }
             let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-            let cleanName = trimmed.isEmpty ? NSLocalizedString("player.guest", value: "Guest", comment: "") : trimmed
+            let cleanName = trimmed.isEmpty ? LanguageManager.localized("player.guest", value: "Guest") : trimmed
             peer.playerID = playerID
             peer.playerName = cleanName
             let player = NetPlayer(id: playerID, name: cleanName, isHost: false)
@@ -389,7 +389,7 @@ final class ClientDriver: NetSessionDriver {
             let wasConnected = session.phase != .menu
             session.resetForMenu()
             if wasConnected {
-                let fallback = NSLocalizedString("error.disconnected", value: "Connection to host lost.", comment: "")
+                let fallback = LanguageManager.localized("error.disconnected", value: "Connection to host lost.")
                 let msg = error?.localizedDescription ?? fallback
                 NotificationCenter.default.post(
                     name: .networkDisconnected,
@@ -458,7 +458,7 @@ final class ClientDriver: NetSessionDriver {
 
         case .kick(let pid):
             if pid == session.localPlayerID {
-                let msg = NSLocalizedString("error.kicked", value: "You were removed by the host.", comment: "")
+                let msg = LanguageManager.localized("error.kicked", value: "You were removed by the host.")
                 session.resetForMenu()
                 NotificationCenter.default.post(
                     name: .networkDisconnected,

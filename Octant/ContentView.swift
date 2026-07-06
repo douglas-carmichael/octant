@@ -5,6 +5,7 @@ import AppKit
 
 struct ContentView: View {
     @StateObject private var coordinator = AppCoordinator()
+    @ObservedObject private var language = LanguageManager.shared
     @State private var showNewGameConfirm = false
     @State private var pendingErrorMessage: String?
 
@@ -106,6 +107,9 @@ struct ContentView: View {
             }
         }
         #endif
+        // Drive UI localization from the in-app language toggle rather than the
+        // system language, so switching EN/FR re-localizes without a restart.
+        .environment(\.locale, language.language.locale)
     }
 
     @ViewBuilder

@@ -234,8 +234,10 @@ private struct CreditLine: View {
                 .foregroundStyle(.white.opacity(0.32))
                 .textCase(.uppercase)
                 .tracking(1.5)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
                 #if os(tvOS)
-                .frame(width: 120, alignment: .trailing)
+                .frame(width: 160, alignment: .trailing)
                 #else
                 .frame(width: 76, alignment: .leading)
                 #endif
