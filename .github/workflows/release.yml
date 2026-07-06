@@ -1,0 +1,53 @@
+name: Release
+
+# Cuts a GitHub release automatically whenever a v* tag is pushed.
+# The release itself is created first (always reliable); an unsigned macOS
+# build is then attached on a best-effort basis.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
+            --generate-notes
+
+      - name: Build macOS app (unsigned)
+        continue-on-error: true
+        run: |
+          xcodebuild \
+            -project Octant.xcodeproj \
+            -target Octant \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+            SYMROOT="$PWD/ci-build" \
+            build
+
+      - name: Package and attach build
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          APP=$(find ci-build -maxdepth 3 -name 'Octant.app' -type d | head -1)
+          if [ -n "$APP" ]; then
+            ditto -c -k --keepParent "$APP" "Octant-macOS-${GITHUB_REF_NAME}.zip"
+            gh release upload "${GITHUB_REF_NAME}" "Octant-macOS-${GITHUB_REF_NAME}.zip" --clobber
+          else
+            echo "No built app found; skipping asset upload."
+          fi
